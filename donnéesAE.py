@@ -103,7 +103,7 @@ def get_movie_info(title):
     film = r["results"][0]
     return film["id"], film.get("genre_ids", [])
 
-# ✅ CORRECTION 1: Créer les listes d'abord, puis assigner
+#  Créer les listes d'abord, puis assigner
 id_films = []
 id_genres = []
 

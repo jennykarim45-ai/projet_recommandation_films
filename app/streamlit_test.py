@@ -424,16 +424,18 @@ def page1():
                 st.write(f"Page {st.session_state.page_number + 1} sur {total_pages}")
 
             # Boutons de navigation (prcédente sur col1/suivante sur col3)
-            col1, col2, col3 = st.columns([1, 8, 1])
-            with col1:
-                if st.button("Page Précédente", disabled=(st.session_state.page_number == 0)): # Désactivé si on est à la première page
-                    st.session_state.page_number -= 1
-                    st.rerun() # On recharge la page pour mettre à jour le contenu
-            with col3:
-                if st.button("Page Suivante", disabled=(st.session_state.page_number >= total_pages - 1)): # Désactivé si on est à la dernière page
-                    st.session_state.page_number += 1
-                    st.rerun() # On recharge la page pour mettre à jour le contenu
-
+            def boutons_navigation(key): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons
+                col1, col2, col3 = st.columns([1, 8, 1])
+                with col1:
+                    if st.button("Page Précédente", key=key, disabled=(st.session_state.page_number == 0)): # Désactivé si on est à la première page
+                        st.session_state.page_number -= 1
+                        st.rerun() # On recharge la page pour mettre à jour le contenu
+                with col3: # J'ai pas voulu me faire chier pour la génération de la deuxième clef
+                    if st.button("Page Suivante",key=key*100, disabled=(st.session_state.page_number >= total_pages - 1)): # Désactivé si on est à la dernière page
+                        st.session_state.page_number += 1
+                        st.rerun() # On recharge la page pour mettre à jour le contenu
+            boutons_navigation(1)
+            
             # Pagination des films (5 par ligne)
             films_par_ligne = 5
             for i in range(0, len(display_films), films_par_ligne):
@@ -448,13 +450,16 @@ def page1():
                             st.image("http://via.placeholder.com/150", width=150)
                         else:  # On affiche l'affiche du film
                             st.image(poster_url, width=150)
-                        st.markdown(f"**{film['titre']}**") # Titre en gras
+                        st.markdown(f"**{film['titre']}**", width=150, text_alignment="center") # Titre en gras
                         
                         # Ajout d'un bouton "Infos" pour chaque film
-                        if st.button("DETAILS", key=f"film_{idx}", use_container_width=True):
+                        if st.button("DETAILS", key=f"film_{idx}", width=150):
                             st.session_state.selected_film = film['titre']
                             st.rerun()
-
+        
+        # On remet les boutons de navigation en bas de la page pour l'user experience
+        boutons_navigation(2)
+                    
     # On ferme enfin la box principale
     st.markdown('</div>', unsafe_allow_html=True)
 

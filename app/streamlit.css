@@ -20,13 +20,22 @@ body {
 }
 
 .app-footer {
-  border-top: 2px solid #c62828;
+  border-top: 2px solid #ffffff;
   padding: 20px;
   margin-top: 3rem;
-  background-color: #f8f9fa;
+  
+  background-color: rgba(0,0,0,0.01);
 }
 
-
+.filtre_boxing {
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background: transparent; /* make background transparent so it's a framed box */
+  box-shadow: none; /* remove shadow to avoid white bar effect */
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
 
 /* AJOUT : STYLES POUR LES BOUTONS DE NAVIGATION RESPONSIVE
 /* Style de base pour tous les liens de page */

@@ -17,6 +17,9 @@ if css_path.exists():
 else:
     st.warning(f"CSS file not found at: {css_path}")
 
+# Logo WCS
+logo_WCS = Path(__file__).parent / "wcs.jpg"
+
 # On intègre  le fichier csv et on définit la liste des genres
 film_csv = pd.read_csv("films_final.csv")
 bdd = pd.DataFrame(film_csv)
@@ -309,7 +312,7 @@ def page1():
         st.markdown('<h1 class="main-title">Recherche de films A&E</h1>', unsafe_allow_html=True)
 
         # Filtres container (dans la box stylisée)
-        with st.container():
+        with st.container(border=True):
             st.subheader("Filtres")
 
             # colonnes des filtres principaux
@@ -355,49 +358,49 @@ def page1():
                 st.checkbox(f"{genres[5]}", key="genre_5")
                 st.checkbox(f"{genres[10]}", key="genre_10")
                 st.checkbox(f"{genres[15]}", key="genre_15")
-        filter_col1, filter_col2 = st.columns(2)
-        with filter_col1: # Bouton de filtrage
-            if st.button("Filtrer"):
-                # On créé un DF temporaire pour appliquer les filtres
-                temp_bdd_filtre = bdd.copy()
+            filter_col1, filter_col2 = st.columns(2)
+            with filter_col1: # Bouton de filtrage
+                if st.button("Filtrer"):
+                    # On créé un DF temporaire pour appliquer les filtres
+                    temp_bdd_filtre = bdd.copy()
 
-                # Application des filtres un par un
-                if mot_clef: # On met du lowercase pour éviter les soucis de casse et on cherche dans le titre et le résumé
-                    mot_clef_lower = mot_clef.lower()
-                    condition_titre = temp_bdd_filtre["titre"].astype(str).str.lower().str.contains(mot_clef_lower, na=False, regex=False)
-                    condition_resume = temp_bdd_filtre["résumé"].astype(str).str.lower().str.contains(mot_clef_lower, na=False, regex=False)
-                    temp_bdd_filtre = temp_bdd_filtre[condition_titre | condition_resume]
-                if actor != "Tout":
-                    temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["acteurs"].astype(str).str.contains(actor, case=False, na=False, regex=False)]
-                if director != "Tout":
-                    temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["directeurs"].astype(str).str.contains(director, case=False, na=False, regex=False)]
-                if annee_checkbox:
-                    temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) == année]
-                if note != "Tout":
-                    seuil_note = int(note.split(">= ")[1]) # on prend juste le nombre après >=
-                    temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["votes"] >= seuil_note]
-                if popularite != "Tout": # Popularité est catégorisé en Basse (<5), Moyenne (5-10), Haute (>=10) (on peut changer ces seuils si vous voulez)
-                    if popularite == "Basse":
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] < 5]
-                    elif popularite == "Moyenne":
-                        temp_bdd_filtre = temp_bdd_filtre[(temp_bdd_filtre["popularité"] >= 5) & (temp_bdd_filtre["popularité"] < 10)]
-                    elif popularite == "Haute":
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] >= 10]
-                # Genres
-                for i in range(1, 20):
-                    genre_key = f"genre_{i}"
-                    if st.session_state.get(genre_key):
-                        genre_value = genres[i]
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["genres"].astype(str).str.contains(genre_value, case=False, na=False, regex=False)]
-                # On stocke le DF filtré dans l'état de session
-                st.session_state.filtered_data = temp_bdd_filtre.copy()
-                st.session_state.page_number = 0 # On revient à la première page
-                st.rerun() # On recharge la page pour afficher les résultats filtrés
-        # Bouton de réinitialisation des filtres
-        with filter_col2:
-            if st.button("Réinitialiser les filtres"):
-                st.session_state.reset_triggered = True
-                st.rerun() # On recharge la page pour appliquer le reset
+                    # Application des filtres un par un
+                    if mot_clef: # On met du lowercase pour éviter les soucis de casse et on cherche dans le titre et le résumé
+                        mot_clef_lower = mot_clef.lower()
+                        condition_titre = temp_bdd_filtre["titre"].astype(str).str.lower().str.contains(mot_clef_lower, na=False, regex=False)
+                        condition_resume = temp_bdd_filtre["résumé"].astype(str).str.lower().str.contains(mot_clef_lower, na=False, regex=False)
+                        temp_bdd_filtre = temp_bdd_filtre[condition_titre | condition_resume]
+                    if actor != "Tout":
+                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["acteurs"].astype(str).str.contains(actor, case=False, na=False, regex=False)]
+                    if director != "Tout":
+                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["directeurs"].astype(str).str.contains(director, case=False, na=False, regex=False)]
+                    if annee_checkbox:
+                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) == année]
+                    if note != "Tout":
+                        seuil_note = int(note.split(">= ")[1]) # on prend juste le nombre après >=
+                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["votes"] >= seuil_note]
+                    if popularite != "Tout": # Popularité est catégorisé en Basse (<5), Moyenne (5-10), Haute (>=10) (on peut changer ces seuils si vous voulez)
+                        if popularite == "Basse":
+                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] < 5]
+                        elif popularite == "Moyenne":
+                            temp_bdd_filtre = temp_bdd_filtre[(temp_bdd_filtre["popularité"] >= 5) & (temp_bdd_filtre["popularité"] < 10)]
+                        elif popularite == "Haute":
+                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] >= 10]
+                    # Genres
+                    for i in range(1, 20):
+                        genre_key = f"genre_{i}"
+                        if st.session_state.get(genre_key):
+                            genre_value = genres[i]
+                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["genres"].astype(str).str.contains(genre_value, case=False, na=False, regex=False)]
+                    # On stocke le DF filtré dans l'état de session
+                    st.session_state.filtered_data = temp_bdd_filtre.copy()
+                    st.session_state.page_number = 0 # On revient à la première page
+                    st.rerun() # On recharge la page pour afficher les résultats filtrés
+            # Bouton de réinitialisation des filtres
+            with filter_col2:
+                if st.button("Réinitialiser les filtres"):
+                    st.session_state.reset_triggered = True
+                    st.rerun() # On recharge la page pour appliquer le reset
 
         st.subheader("Résultats de la recherche")
 
@@ -474,13 +477,16 @@ st.set_page_config(layout="wide")
 current_page = st.navigation(pages=pages, position="hidden")
 
     # Setup du menu
-num_cols_menu = max(len(pages) + 1, 8)
-columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
-columns_menu[0].write("**Menu**")
-for col, page in zip(columns_menu[1:-1], pages):
-    col.page_link(page, icon=page.icon)
-current_page.run()
+def menu ():
+    num_cols_menu = max(len(pages) + 1, 8)
+    columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
+    columns_menu[0].write("**Menu**")
+    for col, page in zip(columns_menu[1:-1], pages):
+        col.page_link(page, icon=page.icon)
 
+# On lance le menu puis la page
+menu()
+current_page.run()
 # footer fixe en bas de page
 st.markdown('<div class="app-footer">', unsafe_allow_html=True)
 
@@ -501,9 +507,9 @@ with footer_col3:
 with footer_col4:
     st.write("")
 with footer_col5:
-    if Path("wcs.png").exists():
-        st.image("wcs.png", width=150)
+    if logo_WCS.exists():
+        st.image(logo_WCS, width=200)
     else:
         st.markdown("<p style='text-align: right; margin: 0; font-size: 20px; color: #c62828; font-weight: bold;'>WCS</p>", unsafe_allow_html=True)
-st.markdown('<div class="app-footer">', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 

@@ -340,33 +340,14 @@ def page1():
 
             st.write("Genres")
             # Genres comme toggle button dans des petites colonnes
-            # J'aurais pu faire une boucle mais j'ai préféré faire à la main car l'IA me générait automatiquement le contenu après en avoir rentré quelques uns
-            # On peut faire une boucle plus tard si on veut optimiser le code
             but_0, but_a, but_b, but_c, but_d, but_e = st.columns([2.5,5,5,5,5,5])
-            with but_a:
-                st.checkbox(f"{genres[1]}", key="genre_1")
-                st.checkbox(f"{genres[6]}", key="genre_6")
-                st.checkbox(f"{genres[11]}", key="genre_11")
-                st.checkbox(f"{genres[16]}", key="genre_16")
-            with but_b:
-                st.checkbox(f"{genres[2]}", key="genre_2")
-                st.checkbox(f"{genres[7]}", key="genre_7")
-                st.checkbox(f"{genres[12]}", key="genre_12")
-                st.checkbox(f"{genres[17]}", key="genre_17")
-            with but_c:
-                st.checkbox(f"{genres[3]}", key="genre_3")
-                st.checkbox(f"{genres[8]}", key="genre_8")
-                st.checkbox(f"{genres[13]}", key="genre_13")
-                st.checkbox(f"{genres[18]}", key="genre_18")
-            with but_d:
-                st.checkbox(f"{genres[4]}", key="genre_4")
-                st.checkbox(f"{genres[9]}", key="genre_9")
-                st.checkbox(f"{genres[14]}", key="genre_14")
-                st.checkbox(f"{genres[19]}", key="genre_19")
-            with but_e:
-                st.checkbox(f"{genres[5]}", key="genre_5")
-                st.checkbox(f"{genres[10]}", key="genre_10")
-                st.checkbox(f"{genres[15]}", key="genre_15")
+            # On fait une liste des colonnes pour itérer dessus en ommettant la première colonne qui nous sert uniquement pour la pagination (but_0)
+            colonnes_genres = [but_a, but_b, but_c, but_d, but_e]
+            # On itère sur les genres à partir du deuxième (le premier est "Tout")
+            for i, genre_film in enumerate(genres[1:]):
+                # On répartit les genres dans les 5 colonnes de gauche à droite plutôt que de haut en bas
+                with colonnes_genres[i % len(colonnes_genres)]:
+                    st.checkbox(f"{genre_film}", key=f"genre_{i+1}")
             
             st.write("<br><br>", unsafe_allow_html=True)
             # Boutons de filtrage et réinitialisation

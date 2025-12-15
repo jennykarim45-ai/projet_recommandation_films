@@ -20,12 +20,14 @@ body {
   margin: 0.25rem 0 0.75rem 0;
 }
 
+/* Css des synopsis de films sur la page d'un film */
 .synopsis{
   font-size:1.2rem;
   line-height: 1.5rem;
   text-align: justify;
 }
 
+/* Css des titres de films main page + ML */
 .film-title{
   height: 4rem;
   text-align:center;
@@ -34,7 +36,7 @@ body {
   line-height: 2rem;
 }
 
-/* Style du menu en haut de la page */
+/* Styles du menu en haut de la page en 3 étapes pour chaque niveau*/
 .st-key-mymenu{
   border-style: groove;
   border-width: 0.1rem;

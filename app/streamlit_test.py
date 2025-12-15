@@ -422,8 +422,8 @@ def page1():
         total_pages = total_films // films_par_page
         if total_films % films_par_page != 0:
             total_pages += 1 # On ajoute une page supplémentaire pour les restants
-        # Boutons de navigation (prcédente sur col1/suivante sur col3) --> Je l'ai déplacé ici car casse l'UX sinon
-        def boutons_navigation(key_numb): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons
+        # Boutons de navigation (prcédente sur col1/suivante sur col3) --> Je l'ai déplacé ici car casse sinon
+        def boutons_navigation(key_numb): # Attention il faudra à chaque fois rentrer un nouveau numéro pour recréer les boutons afin d'avoir un key id différent
             if total_films > 0 :
                 col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11 = st.columns([4,1,3,1,1,1,1,1,3,1,4])
                 with col2: # On va à la première page
@@ -444,7 +444,7 @@ def page1():
                         if st.button(f"{st.session_state.page_number}", key=f"oneback_{key_numb}", disabled=(st.session_state.page_number < 1), width='stretch'):
                             st.session_state.page_number -= 1
                             st.rerun()
-                with col6: # Page actuelle
+                with col6: # Page actuelle (toujours désactivé)
                     st.button(f"**{st.session_state.page_number + 1}**", key=f"page_actuelle_{key_numb}", disabled=True, width='stretch') # Page actuelle en gras
                 with col7: # On avance d'une page
                     if st.session_state.page_number + 1 < total_pages:

@@ -24,7 +24,7 @@ else:
 logo_WCS = Path(__file__).parent / "wcs.jpg"
 logo_cine_en_delire = Path(__file__).parent / "cine_en_delire.png"
 placeholder = Path(__file__).parent / "placeholder_wcs.png"
-banner = Path(__file__).parent / "image.png"
+banner = Path(__file__).parent / "banniere.png"
 # On intègre  le fichier csv et on définit la liste des genres
 
 @st.cache_data
@@ -297,20 +297,24 @@ def page1():
     if 'reset_triggered' not in st.session_state:
         st.session_state.reset_triggered = False
 
+    if 'sort_by' not in st.session_state:
+        st.session_state['sort_by'] = 'Alphabétique'
+    if 'order_by' not in st.session_state:
+        st.session_state['order_by'] = 'Croissant'
+    
     # vérifie si le reset des filtres a été déclenché et on réinitialise tout si c'est le cas
     if st.session_state.reset_triggered:
         st.session_state.filtered_data = bdd.copy()
         st.session_state.page_number = 0
         st.session_state["filtre_mot_clef"] = ""
-        st.session_state["filtre_note"] = "Tout"
         st.session_state["filtre_acteur"] = "Tout"
-        st.session_state["filtre_popularite"] = "Tout"
         st.session_state["filtre_real"] = "Tout"
-        st.session_state["filtre_annee_checkbox"] = False
-        st.session_state["filtre_annee"] = 2025
+        st.session_state["filtre_periode"] = (1900, 2025)
         for i in range(1, 20):
             genre_key = f"genre_{i}"
             st.session_state[genre_key] = False
+        st.session_state['sort_by'] = 'Alphabétique'
+        st.session_state['order_by'] = 'Croissant'
         st.session_state.reset_triggered = False 
         st.rerun() 
 
@@ -327,25 +331,23 @@ def page1():
         # Filtres container (dans la box stylisée)
         with st.container(border=True):
             st.subheader("Filtres")
-
             # colonnes des filtres principaux
-            # A revoir car je verrai bien un order by pour la popularité ou les notes
             but_gauche, but_centre, but_droit = st.columns(3)
             with but_gauche:
                 mot_clef = st.text_input("Mot-clef", key="filtre_mot_clef")
                 st.write("<br>", unsafe_allow_html=True)
-                note = st.selectbox("Note", options=["Tout", ">= 5", ">= 7", ">= 9"], key="filtre_note")
             with but_centre:
                 actor = st.selectbox("Acteur", options=acteur_list, key="filtre_acteur")
                 st.write("<br> ", unsafe_allow_html=True)
-                popularite = st.selectbox("Popularité", options=["Tout", "Basse", "Moyenne", "Haute"], key="filtre_popularite")
             with but_droit:
                 director = st.selectbox("Réalisateur", options=realisateur_list, key="filtre_real")
                 st.write("<br> ", unsafe_allow_html=True)
-                année = st.number_input("Année", min_value=1900, max_value=2025, value=2025, step=1, key="filtre_annee")
-                annee_checkbox = st.checkbox("Filtrer par Année",  key="filtre_annee_checkbox")
-
-            st.write("Genres")
+            # Filtre période avec un slider
+            col1, col2, col3 = st.columns([1, 5, 1])
+            with col2:
+                date_sld = st.slider("Sélectionnez une période", 1900, 2025, (1900, 2025), key="filtre_periode")
+                st.write("dates",date_sld)
+                st.write("Genres")
             # Genres comme toggle button dans des petites colonnes
             but_0, but_a, but_b, but_c, but_d, but_e = st.columns([2.5,5,5,5,5,5])
             # On fait une liste des colonnes pour itérer dessus en ommettant la première colonne qui nous sert uniquement pour la pagination (but_0)
@@ -355,7 +357,15 @@ def page1():
                 # On répartit les genres dans les 5 colonnes de gauche à droite plutôt que de haut en bas
                 with colonnes_genres[i % len(colonnes_genres)]:
                     st.checkbox(f"{genre_film}", key=f"genre_{i+1}")
-
+            
+            st.write("<br> ", unsafe_allow_html=True)
+            # Option de tri
+            with st.container(horizontal=True):
+                tri1, tri2, tri3 = st.columns([5, 5, 10])
+                with tri1:
+                    st.selectbox('Trier par :', options=['Alphabétique', 'Année', 'Note', 'Popularité'], key='sort_by')
+                with tri2:
+                    st.selectbox('Ordre :', options=['Croissant', 'Décroissant'], key='order_by')
             st.write("<br><br>", unsafe_allow_html=True)
             
             # Boutons de filtrage et réinitialisation
@@ -375,24 +385,30 @@ def page1():
                         temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["acteurs"].astype(str).str.contains(actor, case=False, na=False, regex=False)]
                     if director != "Tout":
                         temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["directeurs"].astype(str).str.contains(director, case=False, na=False, regex=False)]
-                    if annee_checkbox:
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) == année]
-                    if note != "Tout":
-                        seuil_note = int(note.split(">= ")[1]) # on prend juste le nombre après >=
-                        temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["votes"] >= seuil_note]
-                    if popularite != "Tout": # Popularité est catégorisé en Basse (<5), Moyenne (5-10), Haute (>=10) (on peut changer ces seuils si vous voulez)
-                        if popularite == "Basse":
-                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] < 5]
-                        elif popularite == "Moyenne":
-                            temp_bdd_filtre = temp_bdd_filtre[(temp_bdd_filtre["popularité"] >= 5) & (temp_bdd_filtre["popularité"] < 10)]
-                        elif popularite == "Haute":
-                            temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["popularité"] >= 10]
+                    if date_sld:
+                        temp_bdd_filtre = temp_bdd_filtre[
+                            (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) >= date_sld[0]) &
+                            (temp_bdd_filtre["année"].astype(str).str.slice(-4).astype(int) <= date_sld[1])
+                        ]
                     # Genres
                     for i in range(1, 20):
                         genre_key = f"genre_{i}"
                         if st.session_state.get(genre_key):
                             genre_value = genres[i]
                             temp_bdd_filtre = temp_bdd_filtre[temp_bdd_filtre["genres"].astype(str).str.contains(genre_value, case=False, na=False, regex=False)]
+                    if st.session_state['sort_by']:
+                        sort_column_map = {
+                            'Alphabétique': 'titre',
+                            'Année': 'année',
+                            'Note': 'votes',
+                            'Popularité': 'popularité'
+                        }
+                        sort_column = sort_column_map.get(st.session_state['sort_by'])
+
+                        if sort_column:
+                            ascending = True if st.session_state['order_by'] == 'Croissant' else False
+                            temp_bdd_filtre = temp_bdd_filtre.sort_values(by=sort_column, ascending=ascending)
+
                     # On stocke le DF filtré dans l'état de session
                     st.session_state.filtered_data = temp_bdd_filtre.copy()
                     st.session_state.page_number = 0 # On revient à la première page
@@ -454,7 +470,7 @@ def page1():
                     if st.button("**>>**", key=f"forwardend_{key_numb}", disabled=(st.session_state.page_number == -1 or total_pages==1), width='stretch'):
                         st.session_state.page_number = total_pages - 1
                         st.rerun()
-                        
+                
         if total_films == 0: # Si aucun film ne correspond aux critères
             st.write("Aucun film ne correspond à vos critères de recherche.")
         else:

@@ -372,7 +372,7 @@ def page1():
                     # Boutons de filtrage et réinitialisation
                     filter_col1, filer, filter_col2 = st.columns([1,4,1])
                     with filter_col1: # Bouton de filtrage
-                        if st.button("Filtrer", width='stretch'):
+                        if st.button("Filtrer", width='stretch', key="filter_but"):
                             # On créé un DF temporaire pour appliquer les filtres
                             temp_bdd_filtre = bdd.copy()
 
@@ -415,7 +415,7 @@ def page1():
                             st.rerun() # On recharge la page pour afficher les résultats filtrés
                     # Bouton de réinitialisation des filtres
                     with filter_col2:
-                        if st.button("Réinitialiser les filtres", width='stretch'):
+                        if st.button("Réinitialiser les filtres", width='stretch', key="reset_but"):
                             st.session_state.reset_triggered = True
                             st.rerun() # On recharge la page pour appliquer le reset
 
@@ -515,6 +515,11 @@ def page1():
             # On ferme enfin la box principale
             st.markdown('</div>', unsafe_allow_html=True)
 
+def statistiques():
+    with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
+        with st.container(border=False, width=1980, horizontal_alignment="center", vertical_alignment="center"):
+            st.title("Statistiques BDD")
+            st.image(logo_cine_en_delire, width=600)
 
 def page2():
     with st.container(border=False, width='stretch', horizontal_alignment="center", vertical_alignment="center"):
@@ -560,7 +565,7 @@ def page3():
                 
                 with col1:
                     with st.container(border=True, height='stretch', horizontal=True, vertical_alignment="center"):
-                        st.markdown("""<h3 style='text-align: center;'>Les fonctionnalités du site</h3>""", unsafe_allow_html=True)
+                        st.markdown("""<h3 style='text-align: center; margin-bottom: -1rem'>Les fonctionnalités du site</h3>""", unsafe_allow_html=True)
                         st.markdown("""<p style='text-align: justify; line-height: 1.7;font-size: 16px;'>
                             • Trouvez rapidement vos films préférés grâce à nos filtres avancés<br>
                             • Naviguez facilement parmi des milliers de films<br>
@@ -569,7 +574,7 @@ def page3():
                             • Consultez toutes les infos : synopsis, casting, notes<br>                    
                             • Profitez d'une interface claire et intuitive<br>
                             • Une base de données enrichie avec des informations issues de IMDB, TMDB et AFCAE
-                            <br><br><br>
+                            <br><br><br><br>
                             <u>Notes :</u> Certains films peuvent ne pas avoir d'affiche disponible ou de résumé en raison de limitations dans les données sources.
                             Par ailleurs, les recommandations sont basées sur un algorithme KNN utilisant les genres, acteurs et réalisateurs pour suggérer des films similaires.
                             <br>Les films présentés peuvent parfois ne pas correspondre entièrement aux standards d'Art et Essai en raison de la diversité des données collectées.
@@ -615,6 +620,7 @@ def page3():
 
 pages = [
         st.Page(page1, icon="📽️", title="Recherche A&E", default=True),
+        st.Page(statistiques, icon="✅", title="Statistiques BDD"),
         st.Page(page2, icon="🎭", title="Le ciné en délire"),
         st.Page(page3, icon="🤡", title="A&E tracker by WCS"),
     ]
@@ -625,13 +631,14 @@ current_page = st.navigation(pages=pages, position="hidden")
     # Setup du menu
 @st.cache_data
 def menu ():
-    Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
-    with st.container(key="mymenu", height=38):
-        num_cols_menu = max(len(pages) + 1, 5)
-        columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
-        columns_menu[0].html(Menu_font)
-        for col, page in zip(columns_menu[1:-1], pages):
-            col.page_link(page, icon=page.icon, width="stretch")
+    with st.container(key="menu_container"):
+        Menu_font = """<div class='Menu_test'><span>Menu</span></div>"""
+        with st.container(key="mymenu", height=38):
+            num_cols_menu = max(len(pages) + 1, 6)
+            columns_menu = st.columns(num_cols_menu, vertical_alignment="bottom")
+            columns_menu[0].html(Menu_font)
+            for col, page in zip(columns_menu[1:-1], pages):
+                col.page_link(page, icon=page.icon, width="stretch")
 
 # On lance le menu puis la page
 menu()

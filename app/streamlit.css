@@ -43,6 +43,21 @@ body {
   text-align: center;
 }
 
+.st-key-filter_but {
+  background-color: green;
+  border-color: green;
+}
+
+.st-key-reset_but {
+  background-color: red ;
+  opacity: 90%;
+}
+
+
+.st-key-menu_container {
+  border-width: 3rem;
+}
+
 /* Styles du menu en haut de la page en 3 étapes pour chaque niveau*/
 .st-key-mymenu{
   border-style: groove;
@@ -51,6 +66,7 @@ body {
   margin-top: -3.25rem;
 }
 
+/* Style du texte "Menu" dans le menu */
 .Menu_test{
   text-align: left;
   font-size: 2rem;
@@ -58,6 +74,7 @@ body {
   margin-top: -2rem;
 }
 
+/* Style des liens du menu pour éviter le débordement du texte */
 a[data-testid="stPageLink-NavLink"] {
     white-space: nowrap ;
     overflow: hidden ;
@@ -75,19 +92,23 @@ a[data-testid="stPageLink-NavLink"] {
     padding-right: 0.5rem;
 }
 
+/* Code css pour fixer le menu en haut de la page */
 .st-emotion-cache-7hhi3 {
     padding-top: 0.5rem;
-    height: 4.5rem;
+    height: 4.6rem;
     background-color: black;
     position: fixed;
-    width: 100%;
+    width: 99%;
+    overflow: hidden;
     z-index: 9999;
   }
 
+  /* Code css pour le bouton retour à la recherche */
 .st-key-back_to_search {
     position : fixed;
-    height: 2.5rem;
-    padding-top: 2.3rem;
+    height: fit-content;
+    width: fit-content;
+    padding-top: 2.4rem;
     background-color: black;
-    opacity: 100%;
+    opacity: 90%;
 }

@@ -577,31 +577,11 @@ def statistiques():
     # Graph 4
     def acteurs_pop():
         df_acteurs = bdd[['acteurs', 'nombre de votes']].copy()
-        # s'assurer que le nombre de votes est numérique
         df_acteurs['nombre de votes'] = pd.to_numeric(df_acteurs['nombre de votes'], errors='coerce').fillna(0)
-        def _to_list(x):
-            if isinstance(x, list):
-                return x
-            if isinstance(x, str):
-                try:
-                    if x.startswith('['):
-                        parsed = ast.literal_eval(x)
-                        return parsed if isinstance(parsed, list) else [str(parsed)]
-                    # sinon, séparer par virgule
-                    return [a.strip() for a in x.split(',') if a.strip()]
-                except Exception:
-                    return [a.strip() for a in x.split(',') if a.strip()]
-            return []
-        df_acteurs['acteurs'] = df_acteurs['acteurs'].apply(_to_list)
         df_acteurs_explose = df_acteurs.explode('acteurs')
         df_acteurs_explose['acteurs'] = df_acteurs_explose['acteurs'].astype(str).str.strip()
         df_acteurs_explose = df_acteurs_explose[df_acteurs_explose['acteurs'].astype(bool)]
         top_acteurs = df_acteurs_explose.groupby('acteurs')['nombre de votes'].sum().sort_values(ascending=False).head(10)
-        if top_acteurs.empty:
-            fig = plt.figure(figsize=(10, 6))
-            plt.text(0.5, 0.5, 'Aucun acteur valide trouvé', ha='center', va='center')
-            plt.axis('off')
-            return fig
         fig = plt.figure(figsize=(10, 6))
         sns.barplot(x=top_acteurs.values, y=top_acteurs.index, palette='rocket')
         plt.title('Top 10 des Acteurs cumulant le plus de votes (Carrière)')

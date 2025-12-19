@@ -846,7 +846,7 @@ current_page = st.navigation(pages=pages, position="hidden")
     # Setup du menu
 @st.cache_data
 def menu ():
-    st.container(key="menu_container", height='content', border=False)
+    st.container(key="menu_container", height='content', border=False, width='stretch')
     Menu_font = """<div class='Menu_test' style='text-align:center;'><span>Menu</span></div>"""
     with st.container(key="mymenu", height='content', vertical_alignment="center"):
         num_cols_menu = max(len(pages) + 1, 6)
@@ -863,7 +863,7 @@ current_page.run()
 @st.cache_data
 def footer():
     st.write("<br><br><br>", unsafe_allow_html=True)  # espace pour le footer
-    with st.container(border=False, vertical_alignment="center", height="content"):
+    with st.container(border=False, vertical_alignment="center", height="content", width='stretch'):
         st.write("---", unsafe_allow_html=True)  # ligne de séparation
         footer_col1, footer_col2, footer_col3, footer_col4, footer_col5 = st.columns([1, 1, 3, 1, 1])
         with footer_col1:
